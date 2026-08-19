@@ -39,9 +39,9 @@
 | **v0.5** | ✅ | Tracker: тикеты, автор из Pachca |
 | **v0.6** | ✅ | Матрица SD, keywords, routing, дашборд |
 | **v0.7** | ✅ | Обучение на feedback, burst, multi-intent |
-| **v1.0** | 🎯 | Production Service Desk (локально) |
-| **v1.1** | 📋 | Channel policies (офис / тех. каналы) |
-| **v1.2** | 📋 | Tracker intelligence + knowledge layer |
+| **v1.0** | ✅ | Production Service Desk (локально) |
+| **v1.1** | ✅ | Channel policies (офис / тех. каналы) |
+| **v1.2** | 🚧 | Tracker intelligence + knowledge layer |
 | **v1.3** | 📋 | Диагностические tools (PS / AD / VPN / MDM) |
 | **v1.4** | 📋 | Логи и root cause |
 | **v1.5** | 📋 | SLA / CSAT ops analytics |
@@ -119,7 +119,7 @@
 
 ## После v1.0 — путь к ИИ-инженеру
 
-### v1.1 — Channel policies *(план)*
+### v1.1 — Channel policies *(сделано)*
 
 Расширение канала Pachca без смены core.
 
@@ -129,7 +129,18 @@
 - Офисный контент в Wiki
 - Аналитика: `channel_mode`, `silenced`
 
-### v1.2 — Tracker intelligence + knowledge layer
+Что уже внедрено:
+
+- Отдельный Office Hotline flow для канала `7710693`
+- Structured Wiki FAQ для Office Hotline (`Route`, `Canonical`, `Answer`, `Aliases`, `Examples`, `Notes`)
+- Dedicated analytics page: `/analytics/office-hotline`
+- FAQ-only ответы при confidence ≥ 0.95
+- Разделение technical / office FAQ / silent
+- Спецкейс `IT Storage` с видео-маршрутом и fallback на Wiki attachment
+- Read-only режим для калибровки и последующее включение live-ответов
+- Auto-close follow-up сессии после сообщения пользователя вида “решилось / помогло / всё работает”
+
+### v1.2 — Tracker intelligence + knowledge layer *(MVP в работе)*
 
 Первый шаг от «ответ по Wiki» к «контекст из истории компании».
 
@@ -141,6 +152,13 @@
 | RAG / embeddings | Qdrant (или аналог) для Wiki + выдержки из resolved tickets при росте объёма |
 | Admin UI | Редактирование keywords / priorities / channel map без деплоя |
 | A/B ranking | Сравнение стратегий retrieval (rule-based vs hybrid) |
+
+Что уже есть в MVP:
+
+- `POST /v3/issues/_search` для поиска resolved задач Tracker по текстовым keywords
+- В description создаваемого тикета добавляется секция `Похожие решенные задачи Tracker`
+- Источник keywords: `system + location + question`
+- Окно поиска: последние ~90 дней
 
 **Критерий готовности:** в ≥20% обращений бот цитирует релевантный прошлый инцидент; false-positive rate контролируется вручную.
 

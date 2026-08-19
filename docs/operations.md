@@ -36,6 +36,7 @@ cp .env.example .env   # заполнить токены
 
 - `CONVERSATION_TTL_HOURS=24` — follow-up не резолвится в «мёртвые» треды; после тикета бот слушает тред ещё до 24ч
 - `CONVERSATION_CLOSE_AFTER_TICKET=false` — сессия **не** закрывается после создания тикета (статус по известному ключу в треде без повторного вопроса)
+- Если пользователь пишет, что вопрос **решился / помогло / всё работает**, бот закрывает follow-up сессию и не продолжает диалог инструкциями
 - При старте сервера — `prune` старых записей в `data/conversations.json`
 
 **Проверка статуса:**
@@ -83,6 +84,7 @@ python scripts/load_test.py --work-ms 3000 --concurrency 1,3,5,8,10
 |-----|--------------|
 | `/health` | Жив ли процесс |
 | `/analytics/summary` | Метрики, routing, **логи (снимок)** |
+| `/analytics/office-hotline` | Метрики только по Office Hotline (`chat_id=7710693`) |
 | `/analytics/events` | Сырые события (JSON) |
 | `/analytics/logs` | In-memory логи (JSON) |
 | `/stats` | Агрегаты за период |
@@ -140,6 +142,15 @@ Analytics dashboard snapshot: 42 log lines
 
 Файл: `app/knowledge/priorities.py`
 
+### Office Hotline FAQ
+
+Файл: `data/office_hotline/office-hotline-faq-wiki.md`
+
+- Structured Markdown вместо таблицы
+- Один кейс = один блок `###`
+- Поля: `Route`, `Canonical`, `Answer`, `Aliases`, `Examples`, `Notes`
+- Используется для канала Office Hotline (`7710693`)
+
 ### Категории обращений
 
 Файл: `app/knowledge/tracker_routing.py` → `CATEGORY_CONTEXT_RULES`, `resolve_category()`
@@ -147,6 +158,12 @@ Analytics dashboard snapshot: 42 log lines
 ### Матрица очередей
 
 Файл: `app/knowledge/system_sd_matrix.py`
+
+### Tracker intelligence (v1.2 MVP)
+
+- Поиск похожих resolved задач Tracker добавляется при создании тикета
+- Ссылки на найденные задачи попадают в description нового issue
+- Если enrichment не сработал, создание тикета должно деградировать gracefully: тикет всё равно создаётся
 
 ---
 
